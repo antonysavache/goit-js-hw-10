@@ -1,5 +1,6 @@
 import Notiflix from 'notiflix';
 import debounce from 'lodash.debounce';
+import {fetchUsers} from './export.js'
 
 const DEBOUNCE_DELAY = 300;
 
@@ -10,21 +11,17 @@ const countryUnicDiv = document.querySelector('.country-info');
 
 const woid = document.createElement('p');
 
-function theText() {
-  return ourInput.value.trim();
-}
 
-function fetchUsers() {
-  return fetch(`https://restcountries.com/v3.1/name/${theText()}`).then(response => {
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    return response.json();
-  });
-}
+ourInput.addEventListener('input', debounce(fetchiUserov, DEBOUNCE_DELAY));
+
+
+
 
 function fetchiUserov() {
-  fetchUsers()
+  const value = ourInput.value.trim()
+  value.replace(/\s+/g, '').trim()
+  if (value !== ''){
+    fetchUsers(value)
     .then(users => renderUserList(users))
     .catch(error => {
       console.log(error);
@@ -34,9 +31,9 @@ function fetchiUserov() {
         countryList.innerHTML = '';
       }
     });
-}
+} }
 
-ourInput.addEventListener('input', debounce(fetchiUserov, DEBOUNCE_DELAY));
+
 
 function renderUserList(users) {
   console.log(users.length);
@@ -74,7 +71,7 @@ function renderUserList(users) {
       .join('');
     countryUnicDiv.innerHTML = '';
     countryList.innerHTML = markup;
-  } else if (users.length > 10) {
+  } else if (users.length >= 10) {
     countryUnicDiv.innerHTML = '';
     countryList.innerHTML = '';
     Notiflix.Notify.failure('Слишком много совпадений. Введи что-то конкретнее братишка');
